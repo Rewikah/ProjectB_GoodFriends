@@ -2,16 +2,23 @@
 @model IndexModel
 @{
     ViewData["Title"] = "Home page";
-} 
-<div class="container-fluid px-3">
-    <img src="~/image/Rebecca.png"
-         class="img-fluid w-100 rounded shadow"
-         alt="Header image" />
-</div>
+}
 
-<div class="container text-center mt-5">
-    <h1 class="display-4">Välkommen till min AppRazor!</h1>
-    <p class="lead">
-        Detta är mitt projekt B för Webbutveckling Backend.
-    </p>
+<div class="container-fluid p-0">
+
+    <!-- Header-video (full bredd) -->
+    <video class="w-100 d-block" autoplay muted loop playsinline>
+        <source src="~/video/rebecca3.mp4" type="video/mp4" />
+        Din webbläsare stödjer inte video.
+    </video>
+
+    <div class="container text-center mt-5">
+        <h1 class="display-4">Välkommen till min AppRazor</h1>
+        <p class="lead">
+            Detta projekt är utvecklat som en del av Projekt B i kursen Webbutveckling Backend.
+            Applikationen är byggd med ASP.NET Razor Pages och fokuserar på backend-logik,
+            datamodellering och strukturerad hantering av friends, adresser, pets och quotes.
+        </p>
+        <p>Skapad av: Rebecca Stjärnsten</p>
+    </div>
 </div>
