@@ -12,7 +12,8 @@
         <div>
             <h1 class="h3 mb-0">Friends</h1>
             <div class="text-muted small">
-                Totalt i DB: <strong>@Model.DbItemsCount</strong> · Sida <strong>@Model.PageNr</strong> av <strong>@pageCount</strong>
+                Totalt i DB: <strong>@Model.DbItemsCount</strong> · Sida <strong>@Model.PageNr</strong> av
+                <strong>@pageCount</strong>
             </div>
         </div>
     </div>
@@ -22,22 +23,14 @@
             <div class="row g-2 align-items-end">
                 <div class="col-md-6">
                     <label class="form-label" for="filter">Sök</label>
-                    <input id="filter"
-                           class="form-control"
-                           type="text"
-                           name="filter"
-                           value="@Model.Filter"
-                           placeholder="Sök på namn eller email..." />
+                    <input id="filter" class="form-control" type="text" name="filter" value="@Model.Filter"
+                        placeholder="Sök på namn eller email..." />
                 </div>
 
                 <div class="col-md-2">
                     <label class="form-label" for="pageSize">Per sida</label>
-                    <input id="pageSize"
-                           class="form-control"
-                           type="number"
-                           name="pageSize"
-                           value="@Model.PageSize"
-                           min="1" />
+                    <input id="pageSize" class="form-control" type="number" name="pageSize" value="@Model.PageSize"
+                        min="1" />
                 </div>
 
                 <div class="col-md-4 d-flex gap-2">
@@ -45,14 +38,12 @@
                         Sök
                     </button>
 
-                    <a class="btn btn-outline-secondary"
-                       asp-page="/Friends/Index">
+                    <a class="btn btn-outline-secondary" asp-page="/Friends/Index">
                         Rensa
                     </a>
                 </div>
             </div>
 
-            <!-- När man söker vill man oftast börja på sida 1 -->
             <input type="hidden" name="pageNr" value="1" />
         </div>
     </form>
@@ -86,21 +77,18 @@
                                         <div class="fw-semibold">@f.FirstName @f.LastName</div>
                                     </td>
                                     <td>
-                                        <a class="link-underline link-underline-opacity-0"
-                                           href="mailto:@f.Email">
+                                        <a class="link-underline link-underline-opacity-0" href="mailto:@f.Email">
                                             @f.Email
                                         </a>
                                     </td>
                                     <td class="text-end">
                                         <div class="btn-group btn-group-sm" role="group" aria-label="Actions">
-                                            <a class="btn btn-outline-primary"
-                                               asp-page="/Friends/Details"
-                                               asp-route-id="@f.FriendId">
+                                            <a class="btn btn-outline-primary" asp-page="/Friends/Details"
+                                                asp-route-id="@f.FriendId">
                                                 Details
                                             </a>
-                                            <a class="btn btn-outline-secondary"
-                                               asp-page="/Friends/Edit"
-                                               asp-route-id="@f.FriendId">
+                                            <a class="btn btn-outline-secondary" asp-page="/Friends/Edit"
+                                                asp-route-id="@f.FriendId">
                                                 Edit
                                             </a>
                                         </div>
@@ -118,12 +106,8 @@
         <ul class="pagination justify-content-center mb-0">
 
             <li class="page-item @(Model.PageNr <= 1 ? "disabled" : "")">
-                <a class="page-link"
-                   asp-page="/Friends/Index"
-                   asp-route-pageNr="@(Model.PageNr - 1)"
-                   asp-route-pageSize="@Model.PageSize"
-                   asp-route-filter="@Model.Filter"
-                   aria-label="Föregående">
+                <a class="page-link" asp-page="/Friends/Index" asp-route-pageNr="@(Model.PageNr - 1)"
+                    asp-route-pageSize="@Model.PageSize" asp-route-filter="@Model.Filter" aria-label="Föregående">
                     <span aria-hidden="true">&laquo;</span>
                 </a>
             </li>
@@ -135,12 +119,8 @@
             </li>
 
             <li class="page-item @(Model.PageNr >= pageCount ? "disabled" : "")">
-                <a class="page-link"
-                   asp-page="/Friends/Index"
-                   asp-route-pageNr="@(Model.PageNr + 1)"
-                   asp-route-pageSize="@Model.PageSize"
-                   asp-route-filter="@Model.Filter"
-                   aria-label="Nästa">
+                <a class="page-link" asp-page="/Friends/Index" asp-route-pageNr="@(Model.PageNr + 1)"
+                    asp-route-pageSize="@Model.PageSize" asp-route-filter="@Model.Filter" aria-label="Nästa">
                     <span aria-hidden="true">&raquo;</span>
                 </a>
             </li>
