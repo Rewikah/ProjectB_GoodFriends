@@ -1,0 +1,49 @@
+@page "{id:guid}"
+@model AppRazor.Pages.Friends.EditAddressModel
+
+<h1>Edit address</h1>
+
+@if (!string.IsNullOrWhiteSpace(Model.ErrorMessage))
+{
+    <p style="color:red">@Model.ErrorMessage</p>
+}
+
+<form method="post">
+    <div asp-validation-summary="All" style="color:red"></div>
+
+    <input type="hidden" asp-for="Input.AddressId" />
+
+    <div class="mb-3">
+        <label asp-for="Input.StreetAddress"></label>
+        <input class="form-control" asp-for="Input.StreetAddress" />
+        <span asp-validation-for="Input.StreetAddress" style="color:red"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Input.ZipCode"></label>
+        <input class="form-control" asp-for="Input.ZipCode" />
+        <span asp-validation-for="Input.ZipCode" style="color:red"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Input.City"></label>
+        <input class="form-control" asp-for="Input.City" />
+        <span asp-validation-for="Input.City" style="color:red"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Input.Country"></label>
+        <input class="form-control" asp-for="Input.Country" />
+        <span asp-validation-for="Input.Country" style="color:red"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Save</button>
+
+    <a class="btn btn-secondary"
+       asp-page="/Friends/Details"
+       asp-route-id="@Model.FriendId">Avbryt</a>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

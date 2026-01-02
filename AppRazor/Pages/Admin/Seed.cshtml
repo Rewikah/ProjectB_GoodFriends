@@ -1,0 +1,17 @@
+@page
+@model AppRazor.Pages.Admin.SeedModel
+
+<h1>Seed</h1>
+
+<form method="post">
+    <label>Antal items:</label>
+    <input type="number" name="nr" value="10" min="1" />
+    <button type="submit" asp-page-handler="Seed">Seed</button>
+    <button type="submit" asp-page-handler="Remove">Remove seed</button>
+</form>
+
+@if (Model.ResultJson != null)
+{
+    <h3>Result</h3>
+    <pre>@Model.ResultJson</pre>
+}

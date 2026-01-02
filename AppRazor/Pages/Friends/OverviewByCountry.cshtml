@@ -1,0 +1,34 @@
+@page
+@model AppRazor.Pages.Friends.OverviewByCountryModel
+
+<h1>Overview by Country</h1>
+
+@if (!string.IsNullOrWhiteSpace(Model.ErrorMessage))
+{
+    <p style="color:red">@Model.ErrorMessage</p>
+}
+else if (Model.Rows.Count == 0)
+{
+    <p>Inga friends hittades.</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Country</th>
+                <th>Antal friends</th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach (var r in Model.Rows)
+        {
+            <tr>
+                <td>@r.Country</td>
+                <td>@r.Count</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
+

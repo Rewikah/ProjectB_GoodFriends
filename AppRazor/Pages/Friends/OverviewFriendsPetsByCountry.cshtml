@@ -1,0 +1,56 @@
+@page
+@model AppRazor.Pages.Friends.OverviewFriendsPetsByCountryModel
+
+<h1>Overview Friends and Pets by City</h1>
+
+<form method="get" class="row g-2 align-items-end mb-3">
+    <div class="col-auto">
+        <label class="form-label" for="country">Country</label>
+        <select id="country" name="country" class="form-select">
+            @foreach (var c in Model.Countries)
+            {
+                <option value="@c" selected="@(c == Model.Country ? "selected" : null)">@c</option>
+            }
+        </select>
+    </div>
+    <div class="col-auto">
+        <button type="submit" class="btn btn-primary">Show</button>
+    </div>
+</form>
+
+@if (!string.IsNullOrWhiteSpace(Model.ErrorMessage))
+{
+    <div class="alert alert-danger">@Model.ErrorMessage</div>
+}
+else if (string.IsNullOrWhiteSpace(Model.Country))
+{
+    <p>No countries found (have you seeded the database?).</p>
+}
+else if (Model.Rows.Count == 0)
+{
+    <p>Inga friends hittades för landet <strong>@Model.Country</strong>.</p>
+}
+else
+{
+    <p class="text-muted">Country: <strong>@Model.Country</strong></p>
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>City</th>
+                <th class="text-end">Antal friends</th>
+                <th class="text-end">Antal pets</th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach (var r in Model.Rows)
+        {
+            <tr>
+                <td>@r.City</td>
+                <td class="text-end">@r.FriendsCount</td>
+                <td class="text-end">@r.PetsCount</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}

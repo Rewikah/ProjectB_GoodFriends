@@ -1,0 +1,67 @@
+@page
+@model AppRazor.Pages.Friends.ListByLocationModel
+
+<h1>List Friends by Country / City</h1>
+
+@if (!string.IsNullOrWhiteSpace(Model.ErrorMessage))
+{
+    <div class="alert alert-danger">@Model.ErrorMessage</div>
+}
+
+<form method="get" class="row g-3 mb-3">
+    <div class="col-md-4">
+        <label class="form-label" for="country">Country</label>
+        <select class="form-select" id="country" name="country" onchange="this.form.submit()">
+            <option value="">All countries</option>
+            @foreach (var c in Model.Countries)
+            {
+                <option value="@c" selected="@(string.Equals(Model.Country, c, StringComparison.OrdinalIgnoreCase) ? "selected" : null)">@c</option>
+            }
+        </select>
+    </div>
+
+    <div class="col-md-4">
+        <label class="form-label" for="city">City</label>
+        <select class="form-select" id="city" name="city" onchange="this.form.submit()">
+            <option value="">All cities</option>
+            @foreach (var c in Model.Cities)
+            {
+                <option value="@c" selected="@(string.Equals(Model.City, c, StringComparison.OrdinalIgnoreCase) ? "selected" : null)">@c</option>
+            }
+        </select>
+    </div>
+
+    <div class="col-md-4 d-flex align-items-end">
+        <button type="submit" class="btn btn-primary">Filter</button>
+        <a class="btn btn-outline-secondary ms-2" asp-page="/Friends/ListByLocation">Reset</a>
+    </div>
+</form>
+
+<p class="text-muted">Showing: <strong>@Model.Rows.Count</strong> friend/friends</p>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>City</th>
+            <th>Country</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (var r in Model.Rows)
+    {
+        <tr>
+            <td>@r.Name</td>
+            <td>@r.Email</td>
+            <td>@r.City</td>
+            <td>@r.Country</td>
+            <td>
+                <a asp-page="/Friends/Details" asp-route-id="@r.FriendId">Details</a> |
+                <a asp-page="/Friends/Edit" asp-route-id="@r.FriendId">Edit</a>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>

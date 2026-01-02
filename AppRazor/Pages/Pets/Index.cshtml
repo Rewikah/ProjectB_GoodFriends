@@ -1,0 +1,121 @@
+@page
+@model AppRazor.Pages.Pets.IndexModel
+@{
+    ViewData["Title"] = "Pets";
+}
+
+<h1>Pets</h1>
+
+<form method="get" class="mb-3">
+    <input type="text" name="filter" value="@Model.Filter" placeholder="Sök..." />
+    <input type="number" name="pageSize" value="@Model.PageSize" min="1" style="width:90px;" />
+    <button type="submit">Sök</button>
+</form>
+
+<p>Totalt i DB: @Model.DbItemsCount | Sida @Model.PageNr av @Model.PageCount</p>
+
+@if (!string.IsNullOrWhiteSpace(Model.ErrorMessage))
+{
+    <p style="color:red;">@Model.ErrorMessage</p>
+}
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Namn</th>
+            <th>Typ</th>
+            <th>Mood</th>
+            <th>Ägare</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (var p in Model.Pets)
+    {
+        <tr>
+            <td>@p.Name</td>
+            <td>@p.Kind</td>
+            <td>@p.Mood</td>
+            <td>@(p.Friend is null ? "-" : $"{p.Friend.FirstName} {p.Friend.LastName}")</td>
+            <td class="text-end">
+                <button type="button"
+                        class="btn btn-sm btn-danger js-open-pet-delete"
+                        data-pet-id="@p.PetId"
+                        data-pet-name="@p.Name">
+                    Delete
+                </button>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
+
+<div style="display:flex; gap:10px;">
+    @if (Model.PageNr > 1)
+    {
+        <a asp-page="/Pets/Index"
+           asp-route-pageNr="@(Model.PageNr - 1)"
+           asp-route-pageSize="@Model.PageSize"
+           asp-route-filter="@Model.Filter">Föregående</a>
+    }
+
+    @if (Model.PageNr < Model.PageCount)
+    {
+        <a asp-page="/Pets/Index"
+           asp-route-pageNr="@(Model.PageNr + 1)"
+           asp-route-pageSize="@Model.PageSize"
+           asp-route-filter="@Model.Filter">Nästa</a>
+    }
+</div>
+
+<div class="modal fade" id="confirmDeletePetModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Bekräfta borttagning</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body">
+                Vill du ta bort pet: <b id="petToDeleteName"></b>?
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Avbryt</button>
+
+                <form method="post" asp-page-handler="Delete">
+                    <input type="hidden" name="petId" id="petToDeleteId" />
+
+                    <input type="hidden" name="filter" value="@Model.Filter" />
+                    <input type="hidden" name="pageNr" value="@Model.PageNr" />
+                    <input type="hidden" name="pageSize" value="@Model.PageSize" />
+
+                    <button type="submit" class="btn btn-danger">Ta bort</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+(function () {
+    const modalEl = document.getElementById('confirmDeletePetModal');
+    if (!modalEl) return;
+
+    const modal = new bootstrap.Modal(modalEl);
+
+    document.querySelectorAll('.js-open-pet-delete').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const id = btn.getAttribute('data-pet-id');
+            const name = btn.getAttribute('data-pet-name');
+
+            document.getElementById('petToDeleteId').value = id;
+            document.getElementById('petToDeleteName').textContent = name ?? '';
+
+            modal.show();
+        });
+    });
+})();
+</script>
+}

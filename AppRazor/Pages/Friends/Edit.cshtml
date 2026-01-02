@@ -1,0 +1,44 @@
+@page "{id:guid}"
+@model AppRazor.Pages.Friends.EditModel
+
+<h1>Edit Friend</h1>
+
+@if (!string.IsNullOrEmpty(Model.ErrorMessage))
+{
+    <p style="color:red">@Model.ErrorMessage</p>
+}
+
+<form method="post" asp-route-id="@Model.FriendId">
+    <div asp-validation-summary="ModelOnly" style="color:red"></div>
+
+    <div>
+        <label asp-for="Input.FirstName"></label>
+        <input asp-for="Input.FirstName" />
+        <span asp-validation-for="Input.FirstName" style="color:red"></span>
+    </div>
+
+    <div>
+        <label asp-for="Input.LastName"></label>
+        <input asp-for="Input.LastName" />
+        <span asp-validation-for="Input.LastName" style="color:red"></span>
+    </div>
+
+    <div>
+        <label asp-for="Input.Email"></label>
+        <input asp-for="Input.Email" />
+        <span asp-validation-for="Input.Email" style="color:red"></span>
+    </div>
+
+    <div>
+        <label asp-for="Input.Birthday"></label>
+        <input asp-for="Input.Birthday" type="date" />
+        <span asp-validation-for="Input.Birthday" style="color:red"></span>
+    </div>
+
+    <button type="submit">Spara</button>
+    <a asp-page="/Friends/Details" asp-route-id="@Model.FriendId">Avbryt</a>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

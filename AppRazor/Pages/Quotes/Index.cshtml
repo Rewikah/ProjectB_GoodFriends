@@ -1,0 +1,119 @@
+@page
+@model AppRazor.Pages.Quotes.IndexModel
+
+@{
+    ViewData["Title"] = "Quotes";
+}
+
+<h1>Quotes</h1>
+
+<form method="get" class="mb-3">
+    <input type="text" name="filter" value="@Model.Filter" placeholder="Sök (text/författare)..." />
+    <input type="number" name="pageSize" value="@Model.PageSize" min="1" style="width:90px;" />
+    <button type="submit">Sök</button>
+</form>
+
+@if (!string.IsNullOrWhiteSpace(Model.ErrorMessage))
+{
+    <p class="text-danger">@Model.ErrorMessage</p>
+}
+
+<p>
+    Totalt i DB: @Model.DbItemsCount |
+    Sida @(Model.PageNr + 1) av @Model.PageCount
+</p>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Quote</th>
+            <th>Author</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (var q in Model.Quotes)
+    {
+        <tr>
+            <td>@q.QuoteText</td>
+            <td>@q.Author</td>
+            <td class="text-end">
+                <button type="button"
+                        class="btn btn-sm btn-danger js-open-quote-delete"
+                        data-quote-id="@q.QuoteId"
+                        data-quote-text="@q.QuoteText">
+                    Delete
+                </button>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
+
+<div style="display:flex; gap:10px;">
+    @if (Model.PageNr > 0)
+    {
+        <a asp-page="/Quotes/Index"
+           asp-route-pageNr="@(Model.PageNr - 1)"
+           asp-route-pageSize="@Model.PageSize"
+           asp-route-filter="@Model.Filter">Föregående</a>
+    }
+
+    @if (Model.PageNr < Model.PageCount - 1)
+    {
+        <a asp-page="/Quotes/Index"
+           asp-route-pageNr="@(Model.PageNr + 1)"
+           asp-route-pageSize="@Model.PageSize"
+           asp-route-filter="@Model.Filter">Nästa</a>
+    }
+</div>
+
+@* Modal *@
+<div class="modal fade" id="confirmDeleteQuoteModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Bekräfta borttagning</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <div class="modal-body">
+                Vill du ta bort quote:
+                <div class="mt-2">
+                    <b id="quoteToDeleteText"></b>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Avbryt</button>
+
+                <form method="post" asp-page="/Quotes/Delete">
+                    <input type="hidden" name="Id" id="quoteToDeleteId" />
+                    <input type="hidden" name="ReturnUrl"
+                           value="@Url.Page("/Quotes/Index", new { pageNr = Model.PageNr, pageSize = Model.PageSize, filter = Model.Filter })" />
+                    <button type="submit" class="btn btn-danger">Ta bort</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const modalEl = document.getElementById("confirmDeleteQuoteModal");
+    const modal = new bootstrap.Modal(modalEl);
+
+    const idInput = document.getElementById("quoteToDeleteId");
+    const textEl = document.getElementById("quoteToDeleteText");
+
+    document.querySelectorAll(".js-open-quote-delete").forEach(btn => {
+        btn.addEventListener("click", function () {
+            idInput.value = this.dataset.quoteId;
+            textEl.textContent = this.dataset.quoteText || "";
+            modal.show();
+        });
+    });
+});
+</script>
+}

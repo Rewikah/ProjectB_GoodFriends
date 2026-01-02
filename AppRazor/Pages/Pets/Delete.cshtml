@@ -1,0 +1,32 @@
+@page "{id:guid}"
+@model AppRazor.Pages.Pets.DeleteModel
+
+<h1>Delete Pet</h1>
+
+@if (!string.IsNullOrWhiteSpace(Model.ErrorMessage))
+{
+    <p style="color:red">@Model.ErrorMessage</p>
+}
+else if (Model.Pet is null)
+{
+    <p>Hittar inte petten.</p>
+    <a asp-page="/Pets/Index">Tillbaka</a>
+}
+else
+{
+    <p>Är du säker på att du vill ta bort denna pet?</p>
+
+    <ul>
+        <li><b>Name:</b> @Model.Pet.Name</li>
+        <li><b>Kind:</b> @Model.Pet.Kind</li>
+        <li><b>Mood:</b> @Model.Pet.Mood</li>
+    </ul>
+
+    <form method="post">
+        <input type="hidden" asp-for="Id" />
+        <input type="hidden" asp-for="ReturnUrl" />
+
+        <button type="submit">Ja, ta bort</button>
+        <a asp-page="/Pets/Index" style="margin-left:10px;">Avbryt</a>
+    </form>
+}

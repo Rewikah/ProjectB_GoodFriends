@@ -1,0 +1,52 @@
+@page
+@model AppRazor.Pages.Friends.IndexModel
+
+<h1>Friends</h1>
+
+<form method="get" class="mb-3">
+    <input type="text" name="filter" value="@Model.Filter" placeholder="Sök..." />
+    <input type="number" name="pageSize" value="@Model.PageSize" min="1" style="width:90px;" />
+    <button type="submit">Sök</button>
+</form>
+
+<p>Totalt i DB: @Model.DbItemsCount | Sida @Model.PageNr av @Model.PageCount</p>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Namn</th>
+            <th>Email</th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (var f in Model.Friends)
+    {
+        <tr>
+            <td>@f.FirstName @f.LastName</td>
+            <td>@f.Email</td>
+                    <td>
+                <a asp-page="/Friends/Details" asp-route-id="@f.FriendId">Details</a> |
+                <a asp-page="/Friends/Edit" asp-route-id="@f.FriendId">Edit</a>
+        </td>
+        </tr>
+    }
+    </tbody>
+</table>
+
+<div style="display:flex; gap:10px;">
+    @if (Model.PageNr > 1)
+    {
+        <a asp-page="/Friends/Index"
+           asp-route-pageNr="@(Model.PageNr - 1)"
+           asp-route-pageSize="@Model.PageSize"
+           asp-route-filter="@Model.Filter">Föregående</a>
+    }
+
+    @if (Model.PageNr < Model.PageCount)
+    {
+        <a asp-page="/Friends/Index"
+           asp-route-pageNr="@(Model.PageNr + 1)"
+           asp-route-pageSize="@Model.PageSize"
+           asp-route-filter="@Model.Filter">Nästa</a>
+    }
+</div>

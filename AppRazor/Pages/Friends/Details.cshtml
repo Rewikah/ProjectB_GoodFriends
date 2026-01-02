@@ -1,0 +1,209 @@
+@page "{id:guid}"
+@model AppRazor.Pages.Friends.DetailsModel
+
+<h1>Friend details</h1>
+
+@if (!string.IsNullOrWhiteSpace(Model.ErrorMessage))
+{
+    <div class="alert alert-danger">@Model.ErrorMessage</div>
+}
+else if (Model.Friend is null)
+{
+    <p>Ingen friend hittades.</p>
+}
+else
+{
+    <h2>@Model.Friend.FirstName @Model.Friend.LastName</h2>
+    <p><b>Email:</b> @Model.Friend.Email</p>
+
+    <p>
+        <a asp-page="/Friends/Edit" asp-route-id="@Model.Friend.FriendId">Edit Friend</a> |
+        <a asp-page="/Friends/EditAddress" asp-route-id="@Model.Friend.FriendId">Edit Address</a>
+    </p>
+
+    <hr />
+
+    <h3>Address</h3>
+    @if (Model.Friend.Address is null)
+    {
+        <p>Ingen address.</p>
+    }
+    else
+    {
+        <p><b>Street:</b> @Model.Friend.Address.StreetAddress</p>
+        <p><b>Zip:</b> @Model.Friend.Address.ZipCode</p>
+        <p><b>City:</b> @Model.Friend.Address.City</p>
+        <p><b>Country:</b> @Model.Friend.Address.Country</p>
+    }
+
+    <hr />
+
+    <h3>Pets</h3>
+    @if (Model.Friend.Pets is null || !Model.Friend.Pets.Any())
+    {
+        <p>Inga pets.</p>
+    }
+    else
+    {
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Namn</th>
+                    <th>Typ</th>
+                    <th style="width:140px;"></th>
+                </tr>
+            </thead>
+            <tbody>
+            @foreach (var p in Model.Friend.Pets)
+            {
+                <tr>
+                    <td>@p.Name</td>
+                    <td>@p.Kind</td>
+                    <td>
+                        <button type="button"
+                                class="btn btn-sm btn-danger js-open-pet-modal"
+                                data-pet-id="@p.PetId"
+                                data-pet-name="@p.Name"
+                                data-pet-kind="@p.Kind">
+                            Delete
+                        </button>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    }
+
+    <hr />
+
+    <h3>Quotes</h3>
+    @if (Model.Friend.Quotes is null || !Model.Friend.Quotes.Any())
+    {
+        <p>Inga quotes.</p>
+    }
+    else
+    {
+        <ul class="list-unstyled">
+        @foreach (var q in Model.Friend.Quotes)
+        {
+            <li class="mb-2">
+                “@q.QuoteText”
+                <button type="button"
+                        class="btn btn-sm btn-danger ms-2 js-open-quote-modal"
+                        data-quote-id="@q.QuoteId"
+                        data-quote-text="@q.QuoteText">
+                    Delete
+                </button>
+            </li>
+        }
+        </ul>
+    }
+
+    <p>
+        <a asp-page="/Friends/Index">Tillbaka</a>
+    </p>
+
+    <div class="modal fade" id="confirmDeletePetModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Bekräfta borttagning</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body">
+                    Vill du ta bort pet:
+                    <b id="petToDeleteName"></b><span id="petToDeleteKind"></span>?
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Avbryt</button>
+
+                    <form method="post"
+                          asp-page-handler="DeletePet"
+                          asp-route-id="@Model.Friend.FriendId">
+                        <input type="hidden" name="petId" id="petToDeleteId" />
+                        <button type="submit" class="btn btn-danger">Ta bort</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="confirmDeleteQuoteModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Bekräfta borttagning</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body">
+                    Vill du ta bort denna quote?
+                    <div class="mt-2"><i id="quoteToDeleteText"></i></div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Avbryt</button>
+
+                    <form method="post"
+                          asp-page-handler="DeleteQuote"
+                          asp-route-id="@Model.Friend.FriendId">
+                        <input type="hidden" name="quoteId" id="quoteToDeleteId" />
+                        <button type="submit" class="btn btn-danger">Ta bort</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@section Scripts
+{
+<script>
+(function () {
+    if (typeof bootstrap === 'undefined') {
+        console.error("Bootstrap JS saknas. Kontrollera att bootstrap.bundle.min.js verkligen laddas.");
+        return;
+    }
+
+    const petModalEl = document.getElementById('confirmDeletePetModal');
+    const quoteModalEl = document.getElementById('confirmDeleteQuoteModal');
+
+    const petModal = new bootstrap.Modal(petModalEl);
+    const quoteModal = new bootstrap.Modal(quoteModalEl);
+
+    document.querySelectorAll('.js-open-pet-modal').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+
+            const petId = btn.getAttribute('data-pet-id');
+            const petName = btn.getAttribute('data-pet-name') || '';
+            const petKind = btn.getAttribute('data-pet-kind') || '';
+
+            document.getElementById('petToDeleteId').value = petId;
+            document.getElementById('petToDeleteName').textContent = petName;
+            document.getElementById('petToDeleteKind').textContent = petKind ? ` (${petKind})` : '';
+
+            petModal.show();
+        });
+    });
+
+    document.querySelectorAll('.js-open-quote-modal').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+
+            const quoteId = btn.getAttribute('data-quote-id');
+            const quoteText = btn.getAttribute('data-quote-text') || '';
+
+            document.getElementById('quoteToDeleteId').value = quoteId;
+            document.getElementById('quoteToDeleteText').textContent = `“${quoteText}”`;
+
+            quoteModal.show();
+        });
+    });
+})();
+</script>
+}

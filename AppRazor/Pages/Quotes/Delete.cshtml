@@ -1,0 +1,29 @@
+@page
+@model AppRazor.Pages.Quotes.DeleteModel
+
+<h1>Delete Quote</h1>
+
+@if (!string.IsNullOrWhiteSpace(Model.ErrorMessage))
+{
+    <p style="color:red">@Model.ErrorMessage</p>
+}
+
+@if (Model.Quote is null)
+{
+    <p>Hittade ingen quote.</p>
+    <a asp-page="/Quotes/Index">Tillbaka</a>
+}
+else
+{
+    <div style="border:1px solid #ccc; padding:10px; margin-bottom:10px;">
+        <p><strong>Quote:</strong> @Model.Quote.QuoteText</p>
+        <p><strong>Author:</strong> @Model.Quote.Author</p>
+    </div>
+
+    <form method="post">
+        <input type="hidden" asp-for="Id" />
+        <input type="hidden" asp-for="ReturnUrl" />
+        <button type="submit">Ja, ta bort</button>
+        <a asp-page="/Quotes/Index" style="margin-left:10px;">Avbryt</a>
+    </form>
+}

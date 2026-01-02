@@ -7,6 +7,7 @@
     <ProjectReference Include="..\Encryptions\Encryptions.csproj" />
     <ProjectReference Include="..\Models\Models.csproj" />
     <ProjectReference Include="..\Services\Services.csproj" />
+    <ProjectReference Include="..\DbModels\DbModels.csproj" />
   </ItemGroup>
 
   <PropertyGroup>
