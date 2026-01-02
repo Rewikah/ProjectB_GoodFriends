@@ -20,6 +20,7 @@ public class SeedModel : PageModel
     {
     }
 
+    // Körs när Seed-knappen trycks
     public async Task<IActionResult> OnPostSeedAsync(int nr)
     {
         var res = await _admin.SeedAsync(nr);
@@ -27,6 +28,7 @@ public class SeedModel : PageModel
         return Page();
     }
 
+    // Körs när Remove seed-knappen trycks
     public async Task<IActionResult> OnPostRemoveAsync()
     {
         var res = await _admin.RemoveSeedAsync(true);
