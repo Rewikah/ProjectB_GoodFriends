@@ -30,7 +30,7 @@ public class EditAddressModel : PageModel
         public Guid AddressId { get; set; }
 
         [Required]
-        [RegularExpression(@"^[a-zA-Z0-9\s]*$",
+        [RegularExpression(@"^[a-zA-ZåäöÅÄÖ0-9\s]*$",
             ErrorMessage = "Street Address får bara innehålla bokstäver, siffror och mellanslag.")]
         public string StreetAddress { get; set; } = string.Empty;
 
@@ -38,12 +38,12 @@ public class EditAddressModel : PageModel
         public int ZipCode { get; set; }
 
         [Required]
-        [RegularExpression(@"^[a-zA-Z0-9\s]*$",
+        [RegularExpression(@"^[a-zA-ZåäöÅÄÖ0-9\s]*$",
             ErrorMessage = "City får bara innehålla bokstäver, siffror och mellanslag.")]
         public string City { get; set; } = string.Empty;
 
         [Required]
-        [RegularExpression(@"^[a-zA-Z0-9\s]*$",
+        [RegularExpression(@"^[a-zA-ZåäöÅÄÖ0-9\s]*$",
             ErrorMessage = "Country får bara innehålla bokstäver, siffror och mellanslag.")]
         public string Country { get; set; } = string.Empty;
     }
@@ -82,33 +82,48 @@ public class EditAddressModel : PageModel
     }
 
     public async Task<IActionResult> OnPostAsync(Guid id)
+{
+    FriendId = id;
+
+    if (!ModelState.IsValid)
+        return Page();
+
+    try
     {
-        FriendId = id;
-
-        if (!ModelState.IsValid)
-            return Page();
-
-        try
+        var dto = new AddressCuDto
         {
-            var dto = new AddressCuDto
+            AddressId = Input.AddressId,
+            StreetAddress = Input.StreetAddress.Trim(),
+            ZipCode = Input.ZipCode,
+            City = Input.City.Trim(),
+            Country = Input.Country.Trim()
+        };
+
+        await _addressesService.UpdateAddressAsync(dto);
+
+        // säkerställ att Friend fortfarande är kopplad till Address
+        var friendRes = await _friendsService.ReadFriendAsync(id, flat: false);
+        var friend = friendRes?.Item;
+
+        if (friend != null)
+        {
+            var friendDto = new FriendCuDto(friend)
             {
-                AddressId = Input.AddressId,
-                StreetAddress = Input.StreetAddress.Trim(),
-                ZipCode = Input.ZipCode,
-                City = Input.City.Trim(),
-                Country = Input.Country.Trim()
+                AddressId = Input.AddressId
             };
 
-            dto.EnsureValidity();
-
-            await _addressesService.UpdateAddressAsync(dto);
-
-            return RedirectToPage("/Friends/Details", new { id });
+            friendDto.EnsureValidity();
+            await _friendsService.UpdateFriendAsync(friendDto);
         }
-        catch (Exception ex)
-        {
-            ErrorMessage = ex.Message;
-            return Page();
-        }
+
+        return RedirectToPage("/Friends/Details", new { id });
     }
+    catch (Exception ex)
+    {
+        ErrorMessage = ex.Message;
+        ModelState.AddModelError(string.Empty, ex.Message);
+        return Page();
+    }
+}
+
 }

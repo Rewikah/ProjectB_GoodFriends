@@ -103,8 +103,8 @@ public class EditModel : PageModel
             return Page();
 
         Input.FirstName = Input.FirstName?.Trim() ?? "";
-        Input.LastName  = Input.LastName?.Trim() ?? "";
-        Input.Email     = Input.Email?.Trim() ?? "";
+        Input.LastName = Input.LastName?.Trim() ?? "";
+        Input.Email = Input.Email?.Trim() ?? "";
 
         if (!Regex.IsMatch(Input.FirstName, @"^[a-zA-Z0-9\s]*$"))
             ModelState.AddModelError("Input.FirstName", "Förnamn får bara innehålla bokstäver, siffror och mellanslag.");
@@ -127,9 +127,19 @@ public class EditModel : PageModel
 
         try
         {
-            var dto = new FriendCuDto
+            // Läs in hela friend +Address/Pets/Quotes så man inte tappar relationerna
+            var existingResponse = await _friendsService.ReadFriendAsync(id, flat: false);
+            var existing = existingResponse?.Item;
+
+            if (existing == null)
             {
-                FriendId = id,
+                ErrorMessage = "Kunde inte hitta friend.";
+                return Page();
+            }
+
+            var dto = new FriendCuDto(existing)
+            {
+                // Uppdatera bara de fält som ska ändras på Edit-sidan
                 FirstName = Input.FirstName,
                 LastName = Input.LastName,
                 Email = Input.Email,
